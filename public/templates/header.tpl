@@ -25,8 +25,13 @@
 			}
 		});
 	</script>
-
+	
+	<script type="text/javascript"
+          src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDogU7UNqXr8neTEitN5xmCwEOXet0jg7Y&sensor=false">
+	</script>
+	
 	<link rel="stylesheet" type="text/css" href="{relative_path}/css/theme.css" />
+	<link rel="stylesheet" type="text/css" href="{relative_path}/css/map.css" />
 </head>
 
 <body>

@@ -63,10 +63,16 @@
 		{footerHTML}
 		<div class="copyright">Copyright &copy; 2013 <a target="_blank" href="http://www.nodebb.org">NodeBB</a> by <a target="_blank" href="https://github.com/psychobunny">psychobunny</a>, <a href="https://github.com/julianlam" target="_blank">julianlam</a>, <a href="https://github.com/barisusakli" target="_blank">barisusakli</a> from <a target="_blank" href="http://www.designcreateplay.com">designcreateplay</a></div>
 	</footer>
-
+	
+	
+	
+	
+	
 	<script>
 		require(['forum/footer']);
 	</script>
+	
+	
 
 </body>
 </html>

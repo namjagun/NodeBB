@@ -1,6 +1,8 @@
 <div class="motd{motd_class}">
-	{motd}
+	<div class="google-map-canvas" id="map-canvas"/>
 </div>
+
+
 
 <div class="row home" itemscope itemtype="http://www.schema.org/ItemList">
 	<!-- BEGIN categories -->
