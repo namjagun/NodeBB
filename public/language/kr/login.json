@@ -1,0 +1,10 @@
+{
+	"login": "로그인",
+	"username": "아이디",
+	"password": "비밀번호",
+	"remember_me": "접속정보 저장",
+	"forgot_password": "비밀번호 찾기",
+	"alternative_logins": "SNS 로그인",
+	"failed_login_attempt": "로그인 시도 실패, 다시 해보세요.",
+	"login_successful": "로그인 성공!"
+}

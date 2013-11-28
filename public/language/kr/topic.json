@@ -1,0 +1,22 @@
+{
+	"profile": "프로필",
+	"posted_by": "Posted by",
+	"chat": "채팅",
+	"notify_me": "Be notified of new replies in this topic 이 글의 리플 알림",
+	"favourite": "즐겨찾기",
+	"quote": "인용",
+	"reply": "답글",
+	"edit": "편집",
+	"delete": "삭제",
+	"banned": "밴",
+	"link": "링크",
+	"thread_tools.title": "글쓰기 도구",
+	"thread_tools.pin": "글 핀",
+	"thread_tools.lock": "글 잠그기",
+	"thread_tools.move": "글 이동",
+	"thread_tools.delete": "글 삭제",
+	"load_categories": "카테고리 Loading",
+	"confirm_move": "이동",
+	"favourites.not_logged_in.title": "로그인 하세요",
+	"favourites.not_logged_in.message": "이글을 즐겨찾기 하시려면 로그인 하세요"
+}

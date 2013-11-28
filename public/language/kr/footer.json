@@ -1,0 +1,9 @@
+{
+	"chat.chatting_with": "채팅 <span id='chat-with-name'></span>",
+	"chat.placeholder": "여기에 입력후 엔터를 누르세요",
+	"chat.send": "전송",
+	"stats.online": "접속",
+	"stats.users": "사용자",
+	"stats.topics": "주제",
+	"stats.posts": "글"
+}

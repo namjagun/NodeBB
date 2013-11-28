@@ -1,0 +1,16 @@
+{
+	"register": "등록",
+	"help.email": "이메일은 기본이 비공개입니다.",
+	"help.username_restrictions": "아이디는 중복사용 안됩니다. 다른사람 태그가능 @<span id='yourUsername'>아이디</span>.",
+	"help.minimum_password_length": "비밀번호는 최소 1글자 이상 가능합니다.",
+	"email_address": "Email 주소",
+	"email_address_placeholder": "Email 주소 입력",
+	"username": "아이디",
+	"username_placeholder": "아이디 입력",
+	"password": "비밀번호",
+	"password_placeholder": "비밀번호 입력",
+	"confirm_password": "비밀번호 확인",
+	"confirm_password_placeholder": "비밀번호 확인",
+	"register_now_button": "등록!",
+	"alternative_registration": "소셜 계정으로 등록"
+}
