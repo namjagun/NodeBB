@@ -9,9 +9,12 @@
 	"logout": "로그아웃",
 	"logout.title": "로그아웃 되셨습니다",
 	"logout.message": "로그아웃 하셨습니다.",
+	"header.admin": "관리자",
 	"header.recent": "최근 글",
 	"header.unread": "읽지않은 글",
 	"header.users": "사용자",
 	"header.search": "검색",
+	"header.register": "가입",
+	"header.login": "로그인",
 	"notifications.loading": "알림 로딩중"
 }

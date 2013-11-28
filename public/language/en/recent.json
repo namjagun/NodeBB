@@ -1,5 +1,9 @@
 {
+	"recent": "Recent",
 	"day": "Day",
 	"week": "Week",
-	"month": "Month"
+	"month": "Month",
+	"posts": "posts",
+	"views": "views",
+	"posted": "posted"
 }

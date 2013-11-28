@@ -1,6 +1,6 @@
 <ol class="breadcrumb">
-	<li><a href="/">Home</a></li>
-	<li class="active">Recent <a href="./recent.rss"><i class="icon-rss-sign"></i></a></li>
+	<li><a href="/">[[global:home]]</a></li>
+	<li class="active">[[recent:recent]] <a href="./recent.rss"><i class="icon-rss-sign"></i></a></li>
 </ol>
 
 <ul class="nav nav-pills">
@@ -32,12 +32,12 @@
 					</a>
 					<small>
 						<span class="topic-stats">
-							posts
+							[[recent:posts]]
 							<strong>{topics.postcount}</strong>
 						</span>
 						|
 						<span class="topic-stats">
-							views
+							[[recent:views]]
 							<strong>{topics.viewcount}</strong>
 						</span>
 						|

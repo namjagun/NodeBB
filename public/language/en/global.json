@@ -14,5 +14,7 @@
 	"header.unread": "Unread",
 	"header.users": "Users",
 	"header.search": "Search",
+	"header.register": "Register",
+	"header.login": "Login",
 	"notifications.loading": "Loading Notifications"
 }

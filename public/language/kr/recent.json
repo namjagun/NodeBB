@@ -1,5 +1,9 @@
 {
+	"recent": "최근글",
 	"day": "일",
 	"week": "주",
-	"month": "월"
+	"month": "월",
+	"posts": "작성수",
+	"views": "조회수",
+	"posted": "작성시간"
 }

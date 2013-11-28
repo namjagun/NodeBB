@@ -1,7 +1,7 @@
 <div class="unread">
 	<ol class="breadcrumb">
 		<li><a href="/">[[global:home]]</a></li>
-		<li class="active">{category_name}</li>
+		<li class="active">[[unread:unread]]</li>
 		<div id="category_active_users"></div>
 	</ol>
 

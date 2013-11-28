@@ -3,5 +3,8 @@
 	"no_topics": "<strong>There are no topics in this category.</strong><br />Why don't you try posting one?",
 	"sidebar.recent_replies": "Recent Replies",
 	"sidebar.active_participants": "Active Participants",
-	"sidebar.moderators": "Moderators"
+	"sidebar.moderators": "Moderators",
+	"posts": "posts",
+	"views": "views",
+	"posted": "posted"
 }

@@ -45,12 +45,12 @@
 							</a>
 							<small>
 								<span class="topic-stats">
-									posts
+									[[category:posts]]
 									<strong>{topics.postcount}</strong>
 								</span>
 								|
 								<span class="topic-stats">
-									views
+									[[category:views]]
 									<strong>{topics.viewcount}</strong>
 								</span>
 								|
@@ -58,7 +58,7 @@
 									<a href="/user/{topics.userslug}">
 										<img class="teaser-pic" src="{topics.picture}" title="{topics.username}"/>
 									</a>
-									posted <span class="timeago" title="{topics.relativeTime}"></span>
+									[[category:posted]] <span class="timeago" title="{topics.relativeTime}"></span>
 								</span>
 
 								<span class="pull-right hidden-xs">
