@@ -78,8 +78,12 @@ var path = require('path'),
 					property: 'keywords',
 					content: meta.config.keywords || ''
 				}],
+				defaultLinkTags = [{
+					rel: 'apple-touch-icon',
+					href: meta.config['brand:logo'] || nconf.get('relative_path') + '/logo.png'
+				}],
 				metaString = utils.buildMetaTags(defaultMetaTags.concat(options.metaTags || [])),
-				linkTags = utils.buildLinkTags(options.linkTags || []),
+				linkTags = utils.buildLinkTags(defaultLinkTags.concat(options.linkTags || [])),
 				templateValues = {
 					cssSrc: meta.config['theme:src'] || nconf.get('relative_path') + '/vendor/bootstrap/css/bootstrap.min.css',
 					pluginCSS: plugins.cssFiles.map(function(file) { return { path: file }; }),
@@ -176,14 +180,18 @@ var path = require('path'),
 
 								// Theme's static directory
 								if (themeData[2]) {
-									app.use('/css/assets', express.static(path.join(__dirname, '../node_modules', themeData[1], themeData[2])));
+									app.use('/css/assets', express.static(path.join(__dirname, '../node_modules', themeData[1], themeData[2]), {
+										maxAge: 5184000000
+									}));
 									if (process.env.NODE_ENV === 'development') {
 										winston.info('Static directory routed for theme: ' + themeData[1]);
 									}
 								}
 
 								if (themeData[3]) {
-									app.use('/templates', express.static(path.join(__dirname, '../node_modules', themeData[1], themeData[3])));
+									app.use('/templates', express.static(path.join(__dirname, '../node_modules', themeData[1], themeData[3]), {
+										maxAge: 5184000000
+									}));
 									if (process.env.NODE_ENV === 'development') {
 										winston.info('Custom templates directory routed for theme: ' + themeData[1]);
 									}
@@ -243,7 +251,9 @@ var path = require('path'),
 				app.use(app.router);
 
 				// Static directory /public
-				app.use(nconf.get('relative_path'), express.static(path.join(__dirname, '../', 'public')));
+				app.use(nconf.get('relative_path'), express.static(path.join(__dirname, '../', 'public'), {
+					maxAge: 5184000000
+				}));
 
 				// 404 catch-all
 				app.use(function (req, res, next) {
@@ -393,7 +403,7 @@ var path = require('path'),
 					}, next);
 				},
 				"categories": function (next) {
-					categories.getAllCategories(function (returnData) {
+					categories.getAllCategories(0, function (err, returnData) {
 						returnData.categories = returnData.categories.filter(function (category) {
 							if (category.disabled !== '1') {
 								return true;
@@ -403,7 +413,7 @@ var path = require('path'),
 						});
 
 						next(null, returnData);
-					}, 0);
+					});
 				}
 			}, function (err, data) {
 				res.send(

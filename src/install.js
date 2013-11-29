@@ -204,12 +204,9 @@ var async = require('async'),
 				},
 				function (next) {
 					// Categories
-					var Categories = require('./categories'),
-						admin = {
-							categories: require('./admin/categories')
-						};
+					var Categories = require('./categories');
 
-					Categories.getAllCategories(function (data) {
+					Categories.getAllCategories(0, function (err, data) {
 						if (data.categories.length === 0) {
 							winston.warn('No categories found, populating instance with default categories');
 
@@ -217,7 +214,7 @@ var async = require('async'),
 								default_categories = JSON.parse(default_categories);
 
 								async.eachSeries(default_categories, function (category, next) {
-									admin.categories.create(category, next);
+									Categories.create(category, next);
 								}, function (err) {
 									if (!err) {
 										next();

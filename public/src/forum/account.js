@@ -72,6 +72,7 @@ define(['forum/accountheader'], function(header) {
 			socket.on('event:new_post', function(data) {
 				var html = templates.prepare(templates['account'].blocks['posts']).parse(data);
 				$('.user-recent-posts').prepend(html);
+				$('.user-recent-posts span.timeago').timeago();
 			});
 
 		});
@@ -82,10 +83,10 @@ define(['forum/accountheader'], function(header) {
 
 		if (data.online) {
 			onlineStatus.find('span span').text('online');
-			onlineStatus.find('i').attr('class', 'icon-circle');
+			onlineStatus.find('i').attr('class', 'fa fa-circle');
 		} else {
 			onlineStatus.find('span span').text('offline');
-			onlineStatus.find('i').attr('class', 'icon-circle-blank');
+			onlineStatus.find('i').attr('class', 'fa fa-circle-o');
 		}
 	};
 

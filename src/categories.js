@@ -25,7 +25,8 @@ var RDB = require('./redis.js'),
 				name: data.name,
 				description: data.description,
 				icon: data.icon,
-				blockclass: data.blockclass,
+				bgColor: data.bgColor,
+				color: data.color,
 				slug: slug,
 				topic_count: 0,
 				disabled: 0,
@@ -140,10 +141,16 @@ var RDB = require('./redis.js'),
 		RDB.smembers('cid:' + cid + ':active_users', callback);
 	};
 
-	Categories.getAllCategories = function(callback, current_user) {
+	Categories.getAllCategories = function(current_user, callback) {
 		RDB.lrange('categories:cid', 0, -1, function(err, cids) {
-			RDB.handle(err);
-			Categories.getCategories(cids, callback, current_user);
+			if(err) {
+				return callback(err);
+			}
+			if(cids && cids.length === 0) {
+				return callback(null, {categories : []});
+			}
+			
+			Categories.getCategories(cids, current_user, callback);
 		});
 	};
 
@@ -323,24 +330,20 @@ var RDB = require('./redis.js'),
 		RDB.hincrby('category:' + cid, field, value);
 	};
 
-	Categories.getCategories = function(cids, callback, current_user) {
+	Categories.getCategories = function(cids, uid, callback) {
 		if (!cids || !Array.isArray(cids) || cids.length === 0) {
-			callback({
-				'categories': []
-			});
-			return;
+			return callback(new Error('invalid-cids'), null);
 		}
 
 		function getCategory(cid, callback) {
 			Categories.getCategoryData(cid, function(err, categoryData) {
 				if (err) {
 					winston.warn('Attempted to retrieve cid ' + cid + ', but nothing was returned!');
-					callback(null, null);
-					return;
+					return callback(err, null);
 				}
 
-				Categories.hasReadCategory(cid, current_user, function(hasRead) {
-					categoryData.badgeclass = (parseInt(categoryData.topic_count, 10) === 0 || (hasRead && current_user !== 0)) ? '' : 'badge-important';
+				Categories.hasReadCategory(cid, uid, function(hasRead) {
+					categoryData.badgeclass = (parseInt(categoryData.topic_count, 10) === 0 || (hasRead && uid !== 0)) ? '' : 'badge-important';
 
 					callback(null, categoryData);
 				});
@@ -350,8 +353,7 @@ var RDB = require('./redis.js'),
 		async.map(cids, getCategory, function(err, categories) {
 			if (err) {
 				winston.err(err);
-				callback(null);
-				return;
+				return callback(err, null);
 			}
 
 			categories = categories.filter(function(category) {
@@ -360,7 +362,7 @@ var RDB = require('./redis.js'),
 				return parseInt(a.order, 10) - parseInt(b.order, 10);
 			});
 
-			callback({
+			callback(null, {
 				'categories': categories
 			});
 		});
