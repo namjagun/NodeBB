@@ -31,43 +31,43 @@
 					<span>{email}</span>
 					<br/>
 
-					<span class="account-bio-label">full name</span>
+					<span class="account-bio-label">[[account:fullname]]</span>
 					<span>{fullname}</span>
 					<br/>
 
-					<span class="account-bio-label">website</span>
+					<span class="account-bio-label">[[account:website]]</span>
 					<span><a href="{website}">{websiteName}</a></span>
 					<br/>
 
-					<span class="account-bio-label">location</span>
+					<span class="account-bio-label">[[account:location]]</span>
 					<span>{location}</span>
 					<br/>
 
-					<span class="account-bio-label">age</span>
+					<span class="account-bio-label">[[account:age]]</span>
 					<span>{age}</span>
 					<br/>
 					<hr/>
-					<span class="account-bio-label">joined</span>
+					<span class="account-bio-label">[[account:joined]]</span>
 					<span class="timeago" title="{joindate}"></span>
 					<br/>
 
-					<span class="account-bio-label">profile views</span>
+					<span class="account-bio-label">[[account:profileviews]]</span>
 					<span class="formatted-number">{profileviews}</span>
 					<br/>
 
-					<span class="account-bio-label">reputation</span>
+					<span class="account-bio-label">[[account:reputation]]</span>
 					<span class="formatted-number">{reputation}</span>
 					<br/>
 
-					<span class="account-bio-label">posts</span>
+					<span class="account-bio-label">[[account:posts]]</span>
 					<span class="formatted-number">{postcount}</span>
 					<br/>
 
-					<span class="account-bio-label">followers</span>
+					<span class="account-bio-label">[[account:followers]]</span>
 					<span class="formatted-number">{followerCount}</span>
 					<br/>
 
-					<span class="account-bio-label">following</span>
+					<span class="account-bio-label">[[account:following]]</span>
 					<span class="formatted-number">{followingCount}</span>
 					<br/>
 

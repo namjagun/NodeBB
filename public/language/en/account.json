@@ -1,0 +1,14 @@
+{
+	"email": "email",
+	"fullname": "full name",
+	"website": "website",
+	"location": "location",
+	"age": "age",
+	"joined": "joined",
+	"profileviews": "profile views",
+	"reputation": "reputation",
+	"posts": "posts",
+	"followers": "followers",
+	"following": "following",
+	"signature": "signature"
+}

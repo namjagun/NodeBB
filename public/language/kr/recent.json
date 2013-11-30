@@ -5,5 +5,6 @@
 	"month": "월",
 	"posts": "작성수",
 	"views": "조회수",
-	"posted": "작성시간"
+	"posted": "작성시간",
+	"notopic": "최근 작성된 글이 없습니다."
 }

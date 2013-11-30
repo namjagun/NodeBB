@@ -67,7 +67,7 @@ define(function() {
 				// Add events to the thread tools
 				$('.delete_thread').on('click', function(e) {
 					if (thread_state.deleted !== '1') {
-						bootbox.confirm('Are you sure you want to delete this thread?', function(confirm) {
+						bootbox.confirm('이 스레드를 삭제 할까요??', function(confirm) {
 							if (confirm) {
 								socket.emit('api:topic.delete', {
 									tid: tid
@@ -75,7 +75,7 @@ define(function() {
 							}
 						});
 					} else {
-						bootbox.confirm('Are you sure you want to restore this thread?', function(confirm) {
+						bootbox.confirm('이 스레드를 복구 할까요??', function(confirm) {
 							if (confirm) socket.emit('api:topic.restore', {
 								tid: tid
 							});
@@ -168,16 +168,16 @@ define(function() {
 											app.alert({
 												'alert_id': 'thread_move',
 												type: 'success',
-												title: 'Topic Successfully Moved',
-												message: 'This topic has been successfully moved to ' + targetCatLabel,
+												title: '글이 이동 되었습니다.',
+												message: '이 글이 ' + targetCatLabel + " 로 이동 되었습니다. ",
 												timeout: 5000
 											});
 										} else {
 											app.alert({
 												'alert_id': 'thread_move',
 												type: 'danger',
-												title: 'Unable to Move Topic',
-												message: 'This topic could not be moved to ' + targetCatLabel + '.<br />Please try again later',
+												title: '이동 불가',
+												message: '이 글이 ' + targetCatLabel + " 로 이동이 안됩니다. "+ '.<br />나중에 다시 시도 해 주세요.',
 												timeout: 5000
 											});
 										}
@@ -202,25 +202,25 @@ define(function() {
 				set_follow_state = function(state, quiet) {
 					if (state && !followEl.hasClass('btn-success')) {
 						followEl.addClass('btn-success');
-						followEl[0].title = 'You are currently receiving updates to this topic';
+						followEl[0].title = '이 글을 업데이트 중입니다.';
 						if (!quiet) {
 							app.alert({
 								alert_id: 'topic_follow',
 								timeout: 2500,
-								title: 'Following Topic',
-								message: 'You will now be receiving notifications when somebody posts to this topic.',
+								title: '이 글 팔로우 하기',
+								message: '이 글에 누군가 글을 남기면 알려 드려요.',
 								type: 'success'
 							});
 						}
 					} else if (!state && followEl.hasClass('btn-success')) {
 						followEl.removeClass('btn-success');
-						followEl[0].title = 'Be notified of new replies in this topic';
+						followEl[0].title = '이 글에 답글 달면 알려 주기';
 						if (!quiet) {
 							app.alert({
 								alert_id: 'topic_follow',
 								timeout: 2500,
-								title: 'Not Following Topic',
-								message: 'You will no longer receive notifications from this topic.',
+								title: '이 글 언팔 하기',
+								message: '이 글 알림을 더이상 받지 않습니다.',
 								type: 'success'
 							});
 						}
@@ -235,8 +235,8 @@ define(function() {
 					app.alert({
 						type: 'danger',
 						alert_id: 'topic_follow',
-						title: 'Please Log In',
-						message: 'Please register or log in in order to subscribe to this topic',
+						title: '로그인 하세요.',
+						message: '이 글을 구독 하시려면 가입을 하시거나 로그인을 하세요.',
 						timeout: 5000
 					});
 				}
@@ -660,7 +660,7 @@ define(function() {
 				// Spawn a 'deleted' notice at the top of the page
 				deleteNotice.setAttribute('id', 'thread-deleted');
 				deleteNotice.className = 'alert alert-warning';
-				deleteNotice.innerHTML = 'This thread has been deleted. Only users with thread management privileges can see it.';
+				deleteNotice.innerHTML = '이 글은 삭제 되었습니다. 이 글에 권한이 있는 사람만 볼 수 있습니다.';
 				threadEl.before(deleteNotice);
 
 				thread_state.deleted = '1';
@@ -677,26 +677,26 @@ define(function() {
 			var pinEl = $('.pin_thread');
 
 			if (pinned) {
-				pinEl.html('<i class="fa fa-thumb-tack"></i> Unpin Thread');
+				pinEl.html('<i class="fa fa-thumb-tack"></i> 핀 해제');
 				if (alert) {
 					app.alert({
 						'alert_id': 'thread_pin',
 						type: 'success',
-						title: 'Thread Pinned',
-						message: 'Thread has been successfully pinned',
+						title: '이 글 핀으로 고정 하기',
+						message: '이 글을 핀으로 고정 하였습니다.',
 						timeout: 5000
 					});
 				}
 
 				thread_state.pinned = '1';
 			} else {
-				pinEl.html('<i class="fa fa-thumb-tack"></i> Pin Thread');
+				pinEl.html('<i class="fa fa-thumb-tack"></i> 글 핀');
 				if (alert) {
 					app.alert({
 						'alert_id': 'thread_pin',
 						type: 'success',
-						title: 'Thread Unpinned',
-						message: 'Thread has been successfully unpinned',
+						title: '이 글 핀으로 고정 취소 하기',
+						message: '이 글 핀으로 고정 하기를 취소 했습니다.',
 						timeout: 5000
 					});
 				}

@@ -16,7 +16,7 @@
 </a>
 
 <div class="alert alert-warning hide {no_topics_message}" id="category-no-topics">
-	<strong>There are no recent topics.</strong>
+	<strong>[[recent:notopic]]</strong>
 </div>
 
 <div class="category row">

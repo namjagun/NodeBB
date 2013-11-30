@@ -316,8 +316,8 @@ var socket,
 		function showAlert() {
 			app.alert({
 				type: 'success',
-				title: 'Welcome Back ' + app.username + '!',
-				message: 'You have successfully logged in!',
+				title: '안녕하세요 ' + app.username + ' 님!',
+				message: '로그인 하셨습니다!',
 				timeout: 5000
 			});
 		}
@@ -342,8 +342,8 @@ var socket,
 		if (username === app.username) {
 			app.alert({
 				type: 'warning',
-				title: 'Invalid Chat',
-				message: "You can't chat with yourself!",
+				title: '잘못된 시도',
+				message: "자기 자신과 채팅을 할 수 없어요!",
 				timeout: 5000
 			});
 
@@ -353,8 +353,8 @@ var socket,
 		if (!app.username) {
 			app.alert({
 				type: 'danger',
-				title: 'Not Logged In',
-				message: 'Please log in to chat with <strong>' + username + '</strong>',
+				title: '로그인 하세요',
+				message: '<strong>' + username + '</strong> 채팅을 하시려면 로그인 하세요.',
 				timeout: 5000
 			});
 
