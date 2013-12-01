@@ -55,19 +55,28 @@ var	DebugRoute = function(app) {
 			});
 		});
 
-		app.get('/prune', function(req, res) {
-			var	Notifications = require('../notifications');
+		app.get('/groups/prune', function(req, res) {
+			var	Groups = require('../groups');
 
-			Notifications.prune(new Date(), function() {
-				console.log('done');
+			Groups.prune(function(err) {
+				res.send('pruned');
 			});
-			res.send();
 		});
 
-		app.get('/uuidtest', function(req, res) {
-			var	Utils = require('../../public/src/utils.js');
+		app.get('/reindex', function (req, res) {
+			topics.reIndexAll(function (err) {
+				if (err) {
+					return res.json(err);
+				}
 
-			res.send(Utils.generateUUID());
+				user.reIndexAll(function (err) {
+					if (err) {
+						return res.json(err);
+					} else {
+						res.send('Topics and users reindexed');
+					}
+				});
+			});
 		});
 	});
 };

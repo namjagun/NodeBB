@@ -124,7 +124,10 @@ var fs = require('fs'),
 					function(next) {
 						// CSS Files for plugins
 						if (pluginData.css && pluginData.css instanceof Array) {
-							if (global.env === 'development') winston.info('[plugins] Found ' + pluginData.css.length + ' CSS file(s) for plugin ' + pluginData.id);
+							if (global.env === 'development') {
+								winston.info('[plugins] Found ' + pluginData.css.length + ' CSS file(s) for plugin ' + pluginData.id);
+							}
+
 							_self.cssFiles = _self.cssFiles.concat(pluginData.css.map(function(file) {
 								return path.join('/plugins', pluginData.id, file);
 							}));
@@ -202,9 +205,12 @@ var fs = require('fs'),
 						break;
 					case 'action':
 						async.each(hookList, function(hookObj) {
-							if (hookObj.method) hookObj.method.call(_self.libraries[hookObj.id], args);
-							else {
-								if (global.env === 'development') winston.info('[plugins] Expected method \'' + hookObj.method + '\' in plugin \'' + hookObj.id + '\' not found, skipping.');
+							if (hookObj.method) {
+								hookObj.method.call(_self.libraries[hookObj.id], args);
+							} else {
+								if (global.env === 'development') {
+									winston.info('[plugins] Expected method \'' + hookObj.method + '\' in plugin \'' + hookObj.id + '\' not found, skipping.');
+								}
 							}
 						});
 						break;
@@ -215,7 +221,9 @@ var fs = require('fs'),
 			} else {
 				// Otherwise, this hook contains no methods
 				var returnVal = args;
-				if (callback) callback(null, returnVal);
+				if (callback) {
+					callback(null, returnVal);
+				}
 			}
 		},
 		isActive: function(id, callback) {

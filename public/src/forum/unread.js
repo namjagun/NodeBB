@@ -3,7 +3,7 @@ define(function() {
 		loadingMoreTopics = false;
 
 	Unread.init = function() {
-		app.enter_room('recent_posts');
+		app.enterRoom('recent_posts');
 
 		ajaxify.register_events([
 			'event:new_topic',
@@ -81,6 +81,7 @@ define(function() {
 
 			container.append(html);
 			$('span.timeago').timeago();
+			app.makeNumbersHumanReadable($(html).find('.human-readable-number'));
 		}
 
 		function loadMoreTopics() {

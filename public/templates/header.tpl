@@ -141,10 +141,13 @@
 
 				<ul class="nav navbar-nav navbar-right pagination-block">
 					<li class="active">
-						<a>
+						<a href="#">
 							<i class="fa fa-chevron-up pointer"></i>
 							<span id="pagination"></span>
 							<i class="fa fa-chevron-down pointer"></i>
+							<div class="progress-container">
+								<div class="progress-bar"></div>
+							</div>
 						</a>
 					</li>
 				</ul>

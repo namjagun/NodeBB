@@ -24,10 +24,9 @@
 
 		</ol>
 
-		<ul id="post-container" class="container" data-tid="{topic_id}">
-			<div class="posts">
+		<ul id="post-container" class="container posts" data-tid="{topic_id}">
 			<!-- BEGIN posts -->
-				<li class="row post-row infiniteloaded" data-pid="{posts.pid}" data-uid="{posts.uid}" data-username="{posts.username}" data-deleted="{posts.deleted}" itemscope itemtype="http://schema.org/Comment">
+				<li class="row post-row infiniteloaded" data-pid="{posts.pid}" data-uid="{posts.uid}" data-username="{posts.username}" data-index="{posts.index}" data-deleted="{posts.deleted}" itemscope itemtype="http://schema.org/Comment">
 					<a id="post_anchor_{posts.pid}" name="{posts.pid}"></a>
 
 					<meta itemprop="datePublished" content="{posts.relativeTime}">
@@ -36,7 +35,9 @@
 					<div class="col-md-1 profile-image-block hidden-xs hidden-sm sub-post">
 						<a href="/user/{posts.userslug}">
 							<img src="{posts.picture}" align="left" class="img-thumbnail" itemprop="image" />
-							<span class="label label-danger {posts.show_banned}">[[topic:banned]]</span>
+							<!-- IF posts.user_banned -->
+							<span class="label label-danger">[[topic:banned]]</span>
+							<!-- ENDIF posts.user_banned -->
 						</a>
 					</div>
 
@@ -63,10 +64,17 @@
 								</div>
 
 								<div class="btn-group">
-									<button class="btn btn-sm btn-default follow main-post" type="button" title="Be notified of new replies in this topic"><i class="fa fa-eye"></i></button>
-									<button class="favourite btn btn-sm btn-default {posts.fav_button_class}" type="button">
+									<!-- IF @first -->
+									<button class="btn btn-sm btn-default follow" type="button" title="Be notified of new replies in this topic"><i class="fa fa-eye"></i></button>
+									<!-- ENDIF @first -->
+									<button data-favourited="{posts.favourited}" class="favourite btn btn-sm btn-default <!-- IF posts.favourited --> btn-warning <!-- ENDIF posts.favourited -->" type="button">
 										<span class="favourite-text">[[topic:favourite]]</span>
-										<span class="post_rep_{posts.pid}">{posts.post_rep} </span><i class="fa {posts.fav_star_class}"></i>
+										<span class="post_rep_{posts.pid}">{posts.reputation} </span>
+										<!-- IF posts.favourited -->
+										<i class="fa fa-star"></i>
+										<!-- ELSE -->
+										<i class="fa fa-star-o"></i>
+										<!-- ENDIF posts.favourited -->
 									</button>
 								</div>
 								<div class="btn-group">
@@ -74,10 +82,20 @@
 									<button class="btn btn-sm btn-primary btn post_reply" type="button">[[topic:reply]] <i class="fa fa-reply"></i></button>
 								</div>
 
-								<div class="btn-group pull-right post-tools">
-									<button class="btn btn-sm btn-default link" type="button" title="[[topic:link]]"><i class="fa fa-link"></i></button>
-									<button class="btn btn-sm btn-default edit {posts.display_moderator_tools}" type="button" title="[[topic:edit]]"><i class="fa fa-pencil"></i></button>
-									<button class="btn btn-sm btn-default delete {posts.display_moderator_tools}" type="button" title="[[topic:delete]]"><i class="fa fa-trash-o"></i></button>
+								<div class="pull-right">
+									<div class="btn-group post-tools">
+										<button class="btn btn-sm btn-default link" type="button" title="[[topic:link]]"><i class="fa fa-link"></i></button>
+										<button class="btn btn-sm btn-default facebook-share" type="button" title=""><i class="fa fa-facebook"></i></button>
+										<button class="btn btn-sm btn-default twitter-share" type="button" title=""><i class="fa fa-twitter"></i></button>
+										<button class="btn btn-sm btn-default google-share" type="button" title=""><i class="fa fa-google-plus"></i></button>
+									</div>
+
+									<!-- IF posts.display_moderator_tools -->
+									<div class="btn-group post-tools">
+										<button class="btn btn-sm btn-default edit" type="button" title="[[topic:edit]]"><i class="fa fa-pencil"></i></button>
+										<button class="btn btn-sm btn-default delete" type="button" title="[[topic:delete]]"><i class="fa fa-trash-o"></i></button>
+									</div>
+									<!-- ENDIF posts.display_moderator_tools -->
 								</div>
 
 								<input id="post_{posts.pid}_link" value="" class="pull-right" style="display:none;"></input>
@@ -94,8 +112,10 @@
 								</span>
 								<span class="pull-right">
 									posted <span class="relativeTimeAgo timeago" title="{posts.relativeTime}"></span>
-									<span class="{posts.edited-class}">| last edited by <strong><a href="/user/{posts.editorslug}">{posts.editorname}</a></strong></span>
+									<!-- IF posts.editor -->
+									<span>| last edited by <strong><a href="/user/{posts.editorslug}">{posts.editorname}</a></strong></span>
 									<span class="timeago" title="{posts.relativeEditTime}"></span>
+									<!-- ENDIF posts.editor -->
 								</span>
 								<div style="clear:both;"></div>
 							</div>
@@ -108,9 +128,9 @@
 					<div class="inline-block">
 						<small class="topic-stats">
 							<span>posts</span>
-							<strong><span id="topic-post-count" class="formatted-number">{postcount}</span></strong> |
+							<strong><span id="topic-post-count" class="human-readable-number" title="{postcount}">{postcount}</span></strong> |
 							<span>views</span>
-							<strong><span class="formatted-number">{viewcount}</span></strong> |
+							<strong><span class="human-readable-number" title="{viewcount}">{viewcount}</span></strong> |
 							<span>browsing</span>
 						</small>
 						<div class="thread_active_users active-users inline-block"></div>
@@ -133,7 +153,6 @@
 				</li>
 				<!-- ENDIF @first -->
 			<!-- END posts -->
-			</div>
 		</ul>
 
 		<div class="well col-md-11 col-xs-12 pull-right hide">

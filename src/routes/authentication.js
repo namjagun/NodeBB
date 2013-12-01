@@ -8,8 +8,9 @@
 		nconf = require('nconf'),
 		meta = require('../meta'),
 		user = require('../user'),
+		plugins = require('../plugins'),
 		winston = require('winston'),
-		login_module = require('./../login.js');
+		login_module = require('./../login');
 
 	passport.use(new passportLocal(function(user, password, next) {
 		login_module.loginViaLocal(user, password, function(err, login) {
@@ -18,11 +19,21 @@
 		});
 	}));
 
+	plugins.ready(function() {
+		plugins.fireHook('filter:auth.init', login_strategies, function(err) {
+			if (err) {
+				winston.error('filter:auth.init - plugin failure');
+			}
+
+			Auth.createRoutes(Auth.app);
+		});
+	});
+
 	if (meta.config['social:twitter:key'] && meta.config['social:twitter:secret']) {
 		passport.use(new passportTwitter({
 			consumerKey: meta.config['social:twitter:key'],
 			consumerSecret: meta.config['social:twitter:secret'],
-			callbackURL: nconf.get('url') + 'auth/twitter/callback'
+			callbackURL: 'auth/twitter/callback'
 		}, function(token, tokenSecret, profile, done) {
 			login_module.loginViaTwitter(profile.id, profile.username, profile.photos, function(err, user) {
 				if (err) {
@@ -32,14 +43,20 @@
 			});
 		}));
 
-		login_strategies.push('twitter');
+		login_strategies.push({
+			name: 'twitter',
+			url: '/auth/twitter',
+			callbackURL: '/auth/twitter/callback',
+			icon: 'twitter',
+			scope: ''
+		});
 	}
 
 	if (meta.config['social:google:id'] && meta.config['social:google:secret']) {
 		passport.use(new passportGoogle({
 			clientID: meta.config['social:google:id'],
 			clientSecret: meta.config['social:google:secret'],
-			callbackURL: nconf.get('url') + 'auth/google/callback'
+			callbackURL: 'auth/google/callback'
 		}, function(accessToken, refreshToken, profile, done) {
 			login_module.loginViaGoogle(profile.id, profile.displayName, profile.emails[0].value, function(err, user) {
 				if (err) {
@@ -49,7 +66,13 @@
 			});
 		}));
 
-		login_strategies.push('google');
+		login_strategies.push({
+			name: 'google',
+			url: '/auth/google',
+			callbackURL: nconf.get('url') + '/auth/google/callback',
+			icon: 'google-plus',
+			scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email'
+		});
 	}
 
 	if (meta.config['social:facebook:app_id'] && meta.config['social:facebook:secret']) {
@@ -66,7 +89,13 @@
 			});
 		}));
 
-		login_strategies.push('facebook');
+		login_strategies.push({
+			name: 'facebook',
+			url: '/auth/facebook',
+			callbackURL: nconf.get('url') + '/auth/facebook/callback',
+			icon: 'facebook',
+			scope: 'email'
+		});
 	}
 
 	passport.serializeUser(function(user, done) {
@@ -89,6 +118,10 @@
 		return login_strategies;
 	}
 
+	Auth.registerApp = function(app) {
+		Auth.app = app;
+	}
+
 	Auth.createRoutes = function(app) {
 		app.post('/logout', function(req, res) {
 			if (req.user && req.user.uid > 0) {
@@ -103,38 +136,17 @@
 			res.send(200)
 		});
 
-		if (login_strategies.indexOf('twitter') !== -1) {
-			app.get('/auth/twitter', passport.authenticate('twitter'));
+		for (var i in login_strategies) {
+			var strategy = login_strategies[i];
+			app.get(strategy.url, passport.authenticate(strategy.name, {
+				scope: strategy.scope
+			}));
 
-			app.get('/auth/twitter/callback', passport.authenticate('twitter', {
+			app.get(strategy.callbackURL, passport.authenticate(strategy.name, {
 				successRedirect: '/',
 				failureRedirect: '/login'
 			}));
 		}
-
-		if (login_strategies.indexOf('google') !== -1) {
-			app.get('/auth/google', passport.authenticate('google', {
-				scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email'
-			}));
-
-			app.get('/auth/google/callback', passport.authenticate('google', {
-				successRedirect: '/',
-				failureRedirect: '/login'
-			}));
-		}
-
-		if (login_strategies.indexOf('facebook') !== -1) {
-			app.get('/auth/facebook', passport.authenticate('facebook', {
-				scope: 'email'
-			}));
-
-			app.get('/auth/facebook/callback', passport.authenticate('facebook', {
-				successRedirect: '/',
-				failureRedirect: '/login'
-			}));
-		}
-
-
 
 		app.get('/reset/:code', function(req, res) {
 			app.build_header({

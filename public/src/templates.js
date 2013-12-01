@@ -167,11 +167,13 @@
 			template_data = data;
 			parse_template();
 		}).fail(function (data) {
-			if(data && data.status == 404) {
-				ajaxify.go('404');
-				return;
+			if (data && data.status == 404) {
+				return ajaxify.go('404');
+			} else if (data && data.status === 403) {
+				return ajaxify.go('403');
+			} else {
+				app.alertError("Can't load template data!");
 			}
-			app.alertError("Can't load template data!");
 		});
 
 		function parse_template() {
@@ -239,7 +241,7 @@
 		}
 
 		function makeConditionalRegex(block) {
-			return new RegExp("<!--[\\s]*IF " + block + "[\\s]*-->[\\s\\S]*<!--[\\s]*ENDIF " + block + "[\\s]*-->", 'g');
+			return new RegExp("<!--[\\s]*IF " + block + "[\\s]*-->([\\s\\S]*?)<!--[\\s]*ENDIF " + block + "[\\s]*-->", 'g');
 		}
 
 		function getBlock(regex, block, template) {
@@ -309,36 +311,36 @@
 					} else {
 						function checkConditional(key, value) {
 							var conditional = makeConditionalRegex(key),
-								conditionalBlock = conditional.exec(template);
-							
-							if (conditionalBlock !== null) {
-								conditionalBlock = conditionalBlock[0].split(/<!-- ELSE -->/);
-								
-								if (conditionalBlock[1]) {
-									// there is an else statement
-									if (!value) {
-										template = template.replace(conditional, conditionalBlock[1]);	
+								matches = template.match(conditional);
+
+							if (matches !== null) {
+								for (var i = 0, ii = matches.length; i < ii; i++) {
+									var conditionalBlock = matches[i].split(/<!-- ELSE -->/);
+
+									if (conditionalBlock[1]) {
+										// there is an else statement
+										if (!value) {	
+											template = template.replace(matches[i], conditionalBlock[1]);	
+										} else {
+											template = template.replace(matches[i], conditionalBlock[0]);	
+										}
 									} else {
-										template = template.replace(conditional, conditionalBlock[0]);	
+										// regular if statement				
+										if (!value) {
+											template = template.replace(matches[i], '');
+										}
 									}
-									
-								} else {
-									// regular if 
-									if (!value) {
-										template = template.replace(conditional, '');
-									}
-								}
+								}								
 							}
 						}
 
 						checkConditional(namespace + d, data[d]);
 						checkConditional('!' + namespace + d, !data[d]);
-						
+
 						if (blockInfo) {
 							checkConditional('@first', blockInfo.iterator === 0);
 							checkConditional('@last', blockInfo.iterator === blockInfo.total);
 						}
-						
 						
 						template = replace(namespace + d, data[d], template);
 					}

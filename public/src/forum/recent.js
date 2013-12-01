@@ -91,6 +91,7 @@ define(function() {
 
 		container.append(html);
 		$('span.timeago').timeago();
+		app.makeNumbersHumanReadable($(html).find('.human-readable-number'));
 	}
 
 	Recent.loadMoreTopics = function() {

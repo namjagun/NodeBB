@@ -3,10 +3,11 @@ var bcrypt = require('bcrypt'),
 	emailjs = require('emailjs'),
 	nconf = require('nconf'),
 	winston = require('winston'),
+	gravatar = require('gravatar'),
 	userSearch = require('reds').createSearch('nodebbusersearch'),
 	check = require('validator').check,
 	sanitize = require('validator').sanitize,
-
+	
 	utils = require('./../public/src/utils'),
 	RDB = require('./redis'),
 	meta = require('./meta'),
@@ -316,8 +317,8 @@ var bcrypt = require('bcrypt'),
 		RDB.hset('user:' + uid, field, value, callback);
 	};
 
-	User.setUserFields = function(uid, data) {
-		RDB.hmset('user:' + uid, data);
+	User.setUserFields = function(uid, data, callback) {
+		RDB.hmset('user:' + uid, data, callback);
 	};
 
 	User.incrementUserFieldBy = function(uid, field, value, callback) {
@@ -338,7 +339,7 @@ var bcrypt = require('bcrypt'),
 
 			function iterator(uid, callback) {
 				User.getUserData(uid, function(err, userData) {
-					User.isAdministrator(uid, function(isAdmin) {
+					User.isAdministrator(uid, function(err, isAdmin) {
 						if (userData) {
 							userData.administrator = isAdmin?"1":"0";
 							data.push(userData);
@@ -368,7 +369,7 @@ var bcrypt = require('bcrypt'),
 			options.forcedefault = 'y';
 		}
 
-		return require('gravatar').url(email, options, https);
+		return gravatar.url(email, options, https);
 	};
 
 	User.hashPassword = function(password, callback) {
@@ -723,14 +724,14 @@ var bcrypt = require('bcrypt'),
 	User.isModerator = function(uid, cid, callback) {
 		RDB.sismember('cid:' + cid + ':moderators', uid, function(err, exists) {
 			RDB.handle(err);
-			callback( !! exists);
+			callback(err, !! exists);
 		});
 	};
 
 	User.isAdministrator = function(uid, callback) {
 		Groups.getGidFromName('Administrators', function(err, gid) {
 			Groups.isMember(uid, gid, function(err, isAdmin) {
-				callback( !! isAdmin);
+				callback(err, !! isAdmin);
 			});
 		});
 	};

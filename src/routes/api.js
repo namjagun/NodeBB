@@ -1,14 +1,16 @@
-var user = require('./../user.js'),
-	auth = require('./authentication.js'),
-	topics = require('./../topics.js'),
-	posts = require('./../posts.js'),
-	categories = require('./../categories.js'),
-	utils = require('./../../public/src/utils.js'),
-	pkg = require('../../package.json'),
-	meta = require('./../meta.js'),
-	path = require('path'),
+var path = require('path'),
 	nconf = require('nconf'),
-	async = require('async');
+	async = require('async'),
+
+	user = require('../user'),
+	auth = require('./authentication'),
+	topics = require('../topics'),
+	posts = require('../posts'),
+	categories = require('../categories'),
+	categoryTools = require('../categoryTools')
+	utils = require('../../public/src/utils'),
+	pkg = require('../../package.json'),
+	meta = require('../meta');
 
 
 (function (Api) {
@@ -69,17 +71,16 @@ var user = require('./../user.js'),
 				if (num_strategies == 0) {
 					data = {
 						'login_window:spansize': 'col-md-12',
-						'alternate_logins:display': 'none'
+						'alternate_logins': false
 					};
 				} else {
 					data = {
 						'login_window:spansize': 'col-md-6',
-						'alternate_logins:display': 'block'
-					}
-					for (var i = 0, ii = num_strategies; i < ii; i++) {
-						data[login_strategies[i] + ':display'] = 'active';
+						'alternate_logins': true
 					}
 				}
+
+				data.authentication = login_strategies;
 
 				data.token = res.locals.csrf_token;
 
@@ -94,17 +95,16 @@ var user = require('./../user.js'),
 				if (num_strategies == 0) {
 					data = {
 						'register_window:spansize': 'col-md-12',
-						'alternate_logins:display': 'none'
+						'alternate_logins': false
 					};
 				} else {
 					data = {
 						'register_window:spansize': 'col-md-6',
-						'alternate_logins:display': 'block'
-					}
-					for (var i = 0, ii = num_strategies; i < ii; i++) {
-						data[login_strategies[i] + ':display'] = 'active';
+						'alternate_logins': true
 					}
 				}
+
+				data.authentication = login_strategies;
 
 				data.token = res.locals.csrf_token;
 				data.minimumUsernameLength = meta.config['minimumUsernameLength'];
@@ -127,12 +127,20 @@ var user = require('./../user.js'),
 
 			app.get('/category/:id/:slug?', function (req, res, next) {
 				var uid = (req.user) ? req.user.uid : 0;
-				categories.getCategoryById(req.params.id, uid, function (err, data) {
-					if (!err && data && data.disabled === "0")
-						res.json(data);
-					else
-						next();
-				}, req.params.id, uid);
+
+				// Category Whitelisting
+				categoryTools.privileges(req.params.id, uid, function(err, privileges) {
+					if (!err && privileges.read) {
+						categories.getCategoryById(req.params.id, uid, function (err, data) {
+							if (!err && data && data.disabled === "0")
+								res.json(data);
+							else
+								next();
+						}, req.params.id, uid);
+					} else {
+						res.send(403);
+					}
+				});
 			});
 
 			app.get('/recent/:term?', function (req, res) {
@@ -167,7 +175,9 @@ var user = require('./../user.js'),
 							notifications: notifications
 						});
 					});
-				} else res.send(403);
+				} else {
+					res.send(403);
+				}
 			});
 
 			app.get('/confirm/:id', function (req, res) {
@@ -227,12 +237,14 @@ var user = require('./../user.js'),
 
 				function searchPosts(callback) {
 					search(postSearch, function (err, pids) {
-						if (err)
+						if (err) {
 							return callback(err, null);
+						}
 
 						posts.getPostSummaryByPids(pids, function (err, posts) {
-							if (err)
+							if (err){
 								return callback(err, null);
+							}
 							callback(null, posts);
 						});
 					})
@@ -240,8 +252,9 @@ var user = require('./../user.js'),
 
 				function searchTopics(callback) {
 					search(topicSearch, function (err, tids) {
-						if (err)
+						if (err) {
 							return callback(err, null);
+						}
 
 						topics.getTopicsByTids(tids, 0, function (topics) {
 							callback(null, topics);
@@ -250,8 +263,9 @@ var user = require('./../user.js'),
 				}
 
 				async.parallel([searchPosts, searchTopics], function (err, results) {
-					if (err)
+					if (err) {
 						return next();
+					}
 
 					return res.json({
 						show_no_topics: results[1].length ? 'hide' : '',

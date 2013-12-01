@@ -33,12 +33,12 @@
 					<small>
 						<span class="topic-stats">
 							[[recent:posts]]
-							<strong>{topics.postcount}</strong>
+							<strong class="human-readable-number" title="{topics.postcount}">{topics.postcount}</strong>
 						</span>
 						|
 						<span class="topic-stats">
 							[[recent:views]]
-							<strong>{topics.viewcount}</strong>
+							<strong class="human-readable-number" title="{topics.viewcount}">{topics.viewcount}</strong>
 						</span>
 						|
 						<span>

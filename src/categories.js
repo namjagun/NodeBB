@@ -149,7 +149,7 @@ var RDB = require('./redis.js'),
 			if(cids && cids.length === 0) {
 				return callback(null, {categories : []});
 			}
-			
+
 			Categories.getCategories(cids, current_user, callback);
 		});
 	};
@@ -168,28 +168,6 @@ var RDB = require('./redis.js'),
 				callback(err, null);
 			}
 
-		});
-	};
-
-
-	Categories.privileges = function(cid, uid, callback) {
-		function isModerator(next) {
-			user.isModerator(uid, cid, function(isMod) {
-				next(null, isMod);
-			});
-		}
-
-		function isAdministrator(next) {
-			user.isAdministrator(uid, function(isAdmin) {
-				next(null, isAdmin);
-			});
-		}
-
-		async.parallel([isModerator, isAdministrator], function(err, results) {
-			callback({
-				editable: results.indexOf(true) !== -1 ? true : false,
-				view_deleted: results.indexOf(true) !== -1 ? true : false
-			});
 		});
 	};
 
@@ -322,12 +300,12 @@ var RDB = require('./redis.js'),
 		RDB.hmgetObject('category:' + cid, fields, callback);
 	};
 
-	Categories.setCategoryField = function(cid, field, value) {
-		RDB.hset('category:' + cid, field, value);
+	Categories.setCategoryField = function(cid, field, value, callback) {
+		RDB.hset('category:' + cid, field, value, callback);
 	};
 
-	Categories.incrementCategoryFieldBy = function(cid, field, value) {
-		RDB.hincrby('category:' + cid, field, value);
+	Categories.incrementCategoryFieldBy = function(cid, field, value, callback) {
+		RDB.hincrby('category:' + cid, field, value, callback);
 	};
 
 	Categories.getCategories = function(cids, uid, callback) {

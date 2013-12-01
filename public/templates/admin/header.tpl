@@ -91,7 +91,7 @@
 
 	<div class="container">
 		<div class="row">
-			<div class="col-md-3">
+			<div class="col-sm-3">
 				<div class="well sidebar-nav">
 					<ul class="nav nav-list">
 						<li class="nav-header">NodeBB</li>
@@ -116,6 +116,11 @@
 						<li><a href='{relative_path}/admin/twitter'><i class='fa fa-twitter-square'></i> Twitter</a></li>
 						<li><a href='{relative_path}/admin/facebook'><i class='fa fa-facebook-square'></i> Facebook</a></li>
 						<li><a href='{relative_path}/admin/gplus'><i class='fa fa-google-plus-square'></i> Google+</a></li>
+						<!-- BEGIN authentication -->
+						<li>
+							<a href='{relative_path}/admin{authentication.route}'><i class="fa {authentication.icon}"></i> {authentication.name}</a>
+						</li>
+						<!-- END authentication -->
 					</ul>
 				</div>
 				<div class="well sidebar-nav">
@@ -146,4 +151,4 @@
 				</div><!--/.well -->
 			</div><!--/span-->
 
-			<div class="col-md-9" id="content">
+			<div class="col-sm-9" id="content">

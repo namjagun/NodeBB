@@ -106,7 +106,7 @@ var path = require('path'),
 				uid = options.req.user.uid;
 			}
 
-			user.isAdministrator(uid, function(isAdmin) {
+			user.isAdministrator(uid, function(err, isAdmin) {
 				templateValues.adminDisplay = isAdmin ? 'show' : 'hide';
 
 				translator.translate(templates.header.parse(templateValues), function(template) {
@@ -117,6 +117,11 @@ var path = require('path'),
 
 		});
 	};
+
+	// Cache static files on production
+	if (global.env !== 'development') {
+		app.enable('cache');
+	}
 
 	// Middlewares
 	app.configure(function() {
@@ -154,7 +159,7 @@ var path = require('path'),
 					res.locals.csrf_token = req.session._csrf;
 
 					// Disable framing
-					res.setHeader('X-Frame-Options', 'DENY');
+					res.setHeader('X-Frame-Options', 'SAMEORIGIN');
 
 					next();
 				});
@@ -181,7 +186,7 @@ var path = require('path'),
 								// Theme's static directory
 								if (themeData[2]) {
 									app.use('/css/assets', express.static(path.join(__dirname, '../node_modules', themeData[1], themeData[2]), {
-										maxAge: 5184000000
+										maxAge: app.enabled('cache') ? 5184000000 : 0
 									}));
 									if (process.env.NODE_ENV === 'development') {
 										winston.info('Static directory routed for theme: ' + themeData[1]);
@@ -190,7 +195,7 @@ var path = require('path'),
 
 								if (themeData[3]) {
 									app.use('/templates', express.static(path.join(__dirname, '../node_modules', themeData[1], themeData[3]), {
-										maxAge: 5184000000
+										maxAge: app.enabled('cache') ? 5184000000 : 0
 									}));
 									if (process.env.NODE_ENV === 'development') {
 										winston.info('Custom templates directory routed for theme: ' + themeData[1]);
@@ -252,7 +257,7 @@ var path = require('path'),
 
 				// Static directory /public
 				app.use(nconf.get('relative_path'), express.static(path.join(__dirname, '../', 'public'), {
-					maxAge: 5184000000
+					maxAge: app.enabled('cache') ? 5184000000 : 0
 				}));
 
 				// 404 catch-all
@@ -348,7 +353,7 @@ var path = require('path'),
 
 	app.namespace(nconf.get('relative_path'), function () {
 
-		auth.createRoutes(app);
+		auth.registerApp(app);
 		admin.createRoutes(app);
 		userRoute.createRoutes(app);
 		apiRoute.createRoutes(app);
@@ -727,22 +732,6 @@ var path = require('path'),
 				res: res
 			}, function (err, header) {
 				res.send(header + app.create_route('search/' + req.params.term, null, 'search') + templates.footer);
-			});
-		});
-
-		app.get('/reindex', function (req, res) {
-			topics.reIndexAll(function (err) {
-				if (err) {
-					return res.json(err);
-				}
-
-				user.reIndexAll(function (err) {
-					if (err) {
-						return res.json(err);
-					} else {
-						res.send('Topics and users reindexed');
-					}
-				});
 			});
 		});
 

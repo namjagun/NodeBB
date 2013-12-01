@@ -21,6 +21,7 @@ var cookie = require('cookie'),
 	utils = require('../public/src/utils'),
 	topics = require('./topics'),
 	categories = require('./categories'),
+	CategoryTools = require('./categoryTools'),
 	notifications = require('./notifications'),
 	threadTools = require('./threadTools'),
 	postTools = require('./postTools'),
@@ -345,25 +346,31 @@ module.exports.init = function(io) {
 		});
 
 		socket.on('api:topics.post', function(data) {
+			if (uid < 1 && meta.config.allowGuestPosting === '0') {
+				socket.emit('event:alert', {
+					title: 'Post Unsuccessful',
+					message: 'You don&apos;t seem to be logged in, so you cannot reply.',
+					type: 'danger',
+					timeout: 2000
+				});
+				return;
+			}
 
 			topics.post(uid, data.title, data.content, data.category_id, function(err, result) {
 				if(err) {
-					if(err.message === 'not-logged-in') {
-						socket.emit('event:alert', {
-							title: 'Thank you for posting',
-							message: 'Since you are unregistered, your post is awaiting approval. Click here to register now.',
-							type: 'warning',
-							timeout: 7500,
-							clickfn: function() {
-								ajaxify.go('register');
-							}
-						});
-					} else if (err.message === 'title-too-short') {
+				 	if (err.message === 'title-too-short') {
 						topics.emitTitleTooShortAlert(socket);
 					} else if (err.message === 'content-too-short') {
 						posts.emitContentTooShortAlert(socket);
 					} else if (err.message === 'too-many-posts') {
 						posts.emitTooManyPostsAlert(socket);
+					} else if (err.message === 'no-privileges') {
+						socket.emit('event:alert', {
+							title: 'Unable to post',
+							message: 'You do not have posting privileges in this category.',
+							type: 'danger',
+							timeout: 7500
+						});
 					} else {
 						socket.emit('event:alert', {
 							title: 'Error',
@@ -423,8 +430,7 @@ module.exports.init = function(io) {
 
 			posts.reply(data.topic_id, uid, data.content, function(err, postData) {
 				if(err) {
-
-					if(err.message === 'content-too-short') {
+					if (err.message === 'content-too-short') {
 						posts.emitContentTooShortAlert(socket);
 					} else if (err.message === 'too-many-posts') {
 						posts.emitTooManyPostsAlert(socket);
@@ -434,6 +440,13 @@ module.exports.init = function(io) {
 							message: 'Your reply could not be posted at this time. Please try again later.',
 							type: 'warning',
 							timeout: 2000
+						});
+					} else if (err.message === 'no-privileges') {
+						socket.emit('event:alert', {
+							title: 'Unable to post',
+							message: 'You do not have posting privileges in this category.',
+							type: 'danger',
+							timeout: 7500
 						});
 					}
 					return;
@@ -495,8 +508,8 @@ module.exports.init = function(io) {
 		});
 
 		socket.on('api:topic.delete', function(data) {
-			threadTools.privileges(data.tid, uid, function(privileges) {
-				if (privileges.editable) {
+			threadTools.privileges(data.tid, uid, function(err, privileges) {
+				if (!err && privileges.editable) {
 					threadTools.delete(data.tid, function(err) {
 						if (!err) {
 							emitTopicPostStats();
@@ -511,8 +524,8 @@ module.exports.init = function(io) {
 		});
 
 		socket.on('api:topic.restore', function(data) {
-			threadTools.privileges(data.tid, uid, function(privileges) {
-				if (privileges.editable) {
+			threadTools.privileges(data.tid, uid, function(err, privileges) {
+				if (!err && privileges.editable) {
 					threadTools.restore(data.tid, socket, function(err) {
 						emitTopicPostStats();
 
@@ -526,32 +539,32 @@ module.exports.init = function(io) {
 		});
 
 		socket.on('api:topic.lock', function(data) {
-			threadTools.privileges(data.tid, uid, function(privileges) {
-				if (privileges.editable) {
+			threadTools.privileges(data.tid, uid, function(err, privileges) {
+				if (!err && privileges.editable) {
 					threadTools.lock(data.tid, socket);
 				}
 			});
 		});
 
 		socket.on('api:topic.unlock', function(data) {
-			threadTools.privileges(data.tid, uid, function(privileges) {
-				if (privileges.editable) {
+			threadTools.privileges(data.tid, uid, function(err, privileges) {
+				if (!err && privileges.editable) {
 					threadTools.unlock(data.tid, socket);
 				}
 			});
 		});
 
 		socket.on('api:topic.pin', function(data) {
-			threadTools.privileges(data.tid, uid, function(privileges) {
-				if (privileges.editable) {
+			threadTools.privileges(data.tid, uid, function(err, privileges) {
+				if (!err && privileges.editable) {
 					threadTools.pin(data.tid, socket);
 				}
 			});
 		});
 
 		socket.on('api:topic.unpin', function(data) {
-			threadTools.privileges(data.tid, uid, function(privileges) {
-				if (privileges.editable) {
+			threadTools.privileges(data.tid, uid, function(err, privileges) {
+				if (!err && privileges.editable) {
 					threadTools.unpin(data.tid, socket);
 				}
 			});
@@ -798,7 +811,7 @@ module.exports.init = function(io) {
 
 		socket.on('api:composer.editCheck', function(pid) {
 			posts.getPostField(pid, 'tid', function(err, tid) {
-				postTools.isMain(pid, tid, function(isMain) {
+				postTools.isMain(pid, tid, function(err, isMain) {
 					socket.emit('api:composer.editCheck', {
 						titleEditable: isMain
 					});
@@ -956,6 +969,74 @@ module.exports.init = function(io) {
 				if (!callback) socket.emit('api:admin.user.search', null);
 				else callback();
 			}
+		});
+
+		socket.on('api:admin.categories.search', function(username, cid, callback) {
+			if (uid && uid > 0) {
+				user.search(username, function(data) {
+					async.map(data, function(userObj, next) {
+						CategoryTools.privileges(cid, userObj.uid, function(err, privileges) {
+							if (!err) {
+								userObj.privileges = privileges;
+							} else {
+								winston.error('[socket api:admin.categories.search] Could not retrieve permissions');
+							}
+
+							next(null, userObj);
+						});
+					}, function(err, data) {
+						if (!callback) socket.emit('api:admin.categories.search', data);
+						else callback(null, data);
+					});
+				});
+			} else {
+				if (!callback) socket.emit('api:admin.user.search', null);
+				else callback();
+			}
+		});
+
+		socket.on('api:admin.categories.setPrivilege', function(cid, uid, privilege, set, callback) {
+			var	cb = function(err) {
+				CategoryTools.privileges(cid, uid, callback);
+			};
+
+			if (set) {
+				Groups.joinByGroupName('cid:' + cid + ':privileges:' + privilege, uid, cb);
+			} else {
+				Groups.leaveByGroupName('cid:' + cid + ':privileges:' + privilege, uid, cb);
+			}
+		});
+
+		socket.on('api:admin.categories.getPrivilegeSettings', function(cid, callback) {
+			async.parallel({
+				"+r": function(next) {
+					Groups.getByGroupName('cid:' + cid + ':privileges:+r', { expand: true }, function(err, groupObj) {
+						if (!err) {
+							next.apply(this, arguments);
+						} else {
+							next(null, {
+								members: []
+							});
+						}
+					});
+				},
+				"+w": function(next) {
+					Groups.getByGroupName('cid:' + cid + ':privileges:+w', { expand: true }, function(err, groupObj) {
+						if (!err) {
+							next.apply(this, arguments);
+						} else {
+							next(null, {
+								members: []
+							});
+						}
+					});
+				}
+			}, function(err, data) {
+				callback(null, {
+					"+r": data['+r'].members,
+					"+w": data['+w'].members
+				});
+			});
 		});
 
 		socket.on('api:admin.themes.getInstalled', function(callback) {
