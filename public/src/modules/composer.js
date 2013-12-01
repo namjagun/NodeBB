@@ -111,7 +111,7 @@ define(['taskbar'], function(taskbar) {
 			composer.postContainer = document.createElement('div');
 			composer.postContainer.className = 'post-window row';
 			composer.postContainer.innerHTML =	'<div class="col-md-5">' +
-													'<input type="text" tabIndex="1" placeholder="Enter your topic title here..." />' +
+													'<input type="text" tabIndex="1" placeholder="이곳에 제목을 입력 하세요." />' +
 													'<div class="btn-toolbar formatting-bar">' +
 														'<div class="btn-group">' +
 															'<span class="btn btn-link" tabindex="-1"><i class="fa fa-bold"></i></span>' +
@@ -121,12 +121,12 @@ define(['taskbar'], function(taskbar) {
 														'</div>' +
 													'</div>' +
 													'<textarea tabIndex="2"></textarea>' +
-													'<div class="imagedrop"><div>Drag and Drop Images Here</div></div>'+
+													'<div class="imagedrop"><div>그림을 여기 위에 드래그앤 드랍 하세요.</div></div>'+
 													'<div class="btn-toolbar action-bar">' +
 														'<div class="btn-group" style="float: right; margin-right: -8px">' +
-															'<button data-action="minimize" class="btn hidden-xs" tabIndex="4"><i class="fa fa-download"></i> Minimize</button>' +
-															'<button class="btn" data-action="discard" tabIndex="5"><i class="fa fa-times"></i> Discard</button>' +
-															'<button data-action="post" class="btn" tabIndex="3"><i class="fa fa-check"></i> Submit</button>' +
+															'<button data-action="minimize" class="btn hidden-xs" tabIndex="4"><i class="fa fa-download"></i> 창 최소화</button>' +
+															'<button class="btn" data-action="discard" tabIndex="5"><i class="fa fa-times"></i> 작성글 삭제</button>' +
+															'<button data-action="post" class="btn" tabIndex="3"><i class="fa fa-check"></i> 올리기</button>' +
 														'</div>' +
 													'</div>' +
 												'</div>';
@@ -159,8 +159,8 @@ define(['taskbar'], function(taskbar) {
 						type: 'danger',
 						timeout: 5000,
 						alert_id: 'post_error',
-						title: 'Please Log In to Post',
-						message: 'Posting is currently restricted to registered members only, click here to log in',
+						title: '로그인 하세요.',
+						message: '로그인 한 사용자만 글을 올릴 수 있습니다.',
 						clickfn: function() {
 							ajaxify.go('login');
 						}
@@ -193,7 +193,7 @@ define(['taskbar'], function(taskbar) {
 					case 'minimize': composer.minimize(uuid); break;
 					case 'discard':
 						if (composer.posts[uuid].modified) {
-							bootbox.confirm('Are you sure you wish to discard this post?', function(discard) {
+							bootbox.confirm('지금 작성중인 글을 삭제 할 까요?', function(discard) {
 								if (discard) composer.discard(uuid);
 							});
 						} else {
@@ -344,8 +344,8 @@ define(['taskbar'], function(taskbar) {
 			return app.alert({
 				type: 'danger',
 				timeout: 2000,
-				title: 'Title too short',
-				message: "Please enter a longer title. At least " + config.minimumTitleLength+ " characters.",
+				title: '제목이 너무 짧아요.',
+				message: "최소 " + config.minimumTitleLength+ " 자 이상 제목을 입력해 보세요.",
 				alert_id: 'post_error'
 			});
 		}
@@ -354,8 +354,8 @@ define(['taskbar'], function(taskbar) {
 			return app.alert({
 				type: 'danger',
 				timeout: 2000,
-				title: 'Content too short',
-				message: "Please enter a longer post. At least " + config.minimumPostLength + " characters.",
+				title: '내용이 너무 짧네요.',
+				message: "최소 " + config.minimumPostLength + " 자 이상 내용을 입력해 보세요.",
 				alert_id: 'post_error'
 			});
 		}
