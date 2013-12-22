@@ -133,6 +133,7 @@
 				});
 			});
 		});
+		
 	} else if (nconf.get('setup') || nconf.get('install') || !fs.existsSync(__dirname + '/config.json')) {
 		// New install, ask setup questions
 		if (nconf.get('setup')) {
